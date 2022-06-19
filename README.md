@@ -1,4 +1,4 @@
-# Semantic Classification for Satellite Imagery
+# Semantic Segmentation for Satellite Imagery
 ## About
 This repository aims to perform pixel wise image segmentation of buildings using a dataset containing top-down satellite images of cities in Dubai.
 
