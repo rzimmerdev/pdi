@@ -1,5 +1,6 @@
 # Semantic Classification for Satellite Imagery
 Participants: 
+
 1)João Pedro Duarte Nunes - 12542460
 
 2)Rafael Zimmer - 12542612
