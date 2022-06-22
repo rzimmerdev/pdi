@@ -1,4 +1,13 @@
 # Semantic Classification for Satellite Imagery
+Participants: 
+
+1)João Pedro Duarte Nunes - 12542460
+
+2)Rafael Zimmer - 12542612
+
+3)Eduardo Figueiredo Freire Andrade - 11232820
+
+4)Daniel Carvalho Dantas - 10685702
 ## About
 This repository aims to perform pixel wise image segmentation of buildings using a dataset containing top-down satellite images of cities in Dubai.
 
@@ -34,6 +43,10 @@ The dataset is stored under the `data` folder, and each `Tile` subfolder has a *
 
 Run the preprocess.py script methods to preprocess and analyze images in the `data` folder.
 
+
+
+# Conclusions
+The "Otsu Thresholding" method seems to fit well for the means of this project. The streets in the images are still too evident, though. The next goal is to find a way to mask out those elements from the thresholding mask, so that they are not recognized as constructions in the end of the program.
 
 // TODO:
 View the segmentation classes available in the edisciplinas page, and implement a crude approach to a semantic classification task.
