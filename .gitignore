@@ -1,3 +1,6 @@
 # Editor config folders
 .idea/
 .vscode/
+
+*.DS_STORE
+*.pth
