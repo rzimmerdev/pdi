@@ -15,11 +15,18 @@ from skimage.filters import threshold_otsu, difference_of_gaussians
 from skimage.segmentation import slic
 
 
-# In[2]:
-
 
 # To generate dataset.py
 def get_images(tiles_dir, amount, random=False):
+    '''
+        Function that generates the dataset''
+        Args:
+            tiles_dir (str) : The directory of the tiles
+            amount(int) : The amount of images to be in the dataset
+            random(bool) : Parameter that determines if the dataset will be deterministic
+        Returns:
+            images(list[np.ndarray]) : a list containiung the images of the dataset
+   '''
     images = []
     tiles = os.listdir(tiles_dir)
     if random:
@@ -39,11 +46,15 @@ def get_images(tiles_dir, amount, random=False):
 
     return images
 
-
-# In[3]:
-
-
 def apply_threshold(image):
+    '''
+    Function that applies the threshold to a given image
+    Args:
+        image (np.ndarray) : The image to apply the threshold to
+    Returns:
+        binary (np.ndarray) : The binarized image based on the threshold
+        log (np.ndarray) : The difference of gaussians of the grayscale image
+    '''
 
     grayscale = rgb2gray(image)
     thresh = threshold_otsu(grayscale)
@@ -53,10 +64,14 @@ def apply_threshold(image):
     return binary, log
 
 
-# In[12]:
-
-
 def apply_clustering(image):
+    ''''
+    Function that applies clustering to the image
+    Args:
+        image (np.ndarray) : The image in which the clustering will be applied
+    Returns:
+        labels1, labels2 (np.ndarray): Image mask
+    '''
     labels1 = slic(image, compactness=30, n_segments=100, start_label=1)
     g = graph.rag_mean_color(image, labels1)
     labels2 = graph.cut_threshold(labels1, g, 29)
@@ -64,10 +79,16 @@ def apply_clustering(image):
     return labels1, labels2
 
 
-# In[5]:
-
-
 def apply_semantic_segmentation(image):
+    ''''
+    Function that applies all segmentations in a certain image
+    Args:
+        image (np.ndarray) : The image in which all segmentations will be applied
+    Returns:
+        otsu, k_means (np.ndarray) : Segmented images
+        log (np.ndarray) : Difference of gaussian distributions
+        normalized_cut (np.ndarray) : Image mask
+    '''
     otsu, log = apply_threshold(image)
 
     k_means, normalized_cut = apply_clustering(image)
@@ -75,10 +96,12 @@ def apply_semantic_segmentation(image):
     return otsu, log, k_means, normalized_cut
 
 
-# In[9]:
-
-
 def visualise_semantic(images):
+    ''''
+    Function used for visualization original images and its segmentations
+    Args:
+        images (list): list of images that will be visualized
+    '''
     for semantic in images:
         plt.figure(figsize=(32, 32))
 
@@ -104,10 +127,14 @@ def visualise_semantic(images):
         plt.show()
 
 
-# In[16]:
-
-
 def segment_images(images):
+    ''''
+    Function to apply the different kinds of segmentation to the image
+    Args:
+        images (list) : list of all images that will be segmented
+    Returns:
+        semantics_segmentation (list): the list of images after the applied segmentation 
+    '''
     semantic_segmentation = []
     for image in images:
 
@@ -119,20 +146,12 @@ def segment_images(images):
     return semantic_segmentation
 
 
-# In[17]:
-
 
 def main():
     images = get_images("data/processed", 3, True)
 
     semantic_segmentation = segment_images(images)
     visualise_semantic(semantic_segmentation)
+
 if __name__ == "__main__":
     main()
-
-
-# In[ ]:
-
-
-
-
