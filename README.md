@@ -1,4 +1,4 @@
-# Semantic Classification for Satellite Imagery
+# Buildins Segmentation using Satellite Imagery
 Participants: 
 
 1) João Pedro Duarte Nunes - 12542460
