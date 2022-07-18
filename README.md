@@ -13,7 +13,7 @@ Participants:
 This repository aims to perform pixel wise image segmentation of buildings using a dataset containing top-down satellite images of cities in Dubai.
 
 The dataset used during training can be found [here](https://www.kaggle.com/datasets/humansintheloop/semantic-segmentation-of-aerial-imagery).
-All images are composed by an original satellite photo, as well as a labeled mask image, with different colors corresponding to different elements, such as:
+All images are composed by an original satellite photo, as well as a labeled mask image, with different colors corresponding to different elements (only the colors corresponding to buildings were used), such as:
 1.  Building: #3C1098 (dark purple)
 2.  Land (unpaved area): #8429F6 (magenta)
 3.  Road: #6EC1E4 (cyan)
