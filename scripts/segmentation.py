@@ -1,152 +1,127 @@
-
 import os
 from random import shuffle
 
-import matplotlib.pyplot as plt
+import numpy as np
 import imageio
-from skimage.future import graph
-from skimage.color import rgb2gray, label2rgb
-from skimage.filters import threshold_otsu, difference_of_gaussians
-from skimage.segmentation import slic
+
+import matplotlib.pyplot as plt
+
+from skimage.color import rgb2gray
+from skimage import filters
+from skimage.segmentation import clear_border
+from skimage.morphology import closing, square
+from skimage.metrics import mean_squared_error
+
+from skimage.morphology import disk
+from skimage.segmentation import watershed
+from skimage.filters import rank
 
 
+def get_images(tiles_dir, amount, rand=False):
+    """Get a list of pairs of images and masks read from within a specific folder
 
-# To generate dataset.py
-def get_images(tiles_dir, amount, random=False):
-    '''
-        Function that generates the dataset''
-        Args:
-            tiles_dir (str) : The directory of the tiles
-            amount(int) : The amount of images to be in the dataset
-            random(bool) : Parameter that determines if the dataset will be deterministic
-        Returns:
-            images(list[np.ndarray]) : a list containiung the images of the dataset
-   '''
+    Args:
+         tiles_dir: Path to directory containing all tiles folders
+         amount: Total amount of images to read from the dataset folders
+         rand: Whether to shuffle or not pairs after reading them
+    """
     images = []
     tiles = os.listdir(tiles_dir)
-    if random:
-        shuffle(tiles)
+
+    # Iterate over all tiles of images
     for tile in tiles:
+        if amount < 0:
+                break
+
         current_tile = tiles_dir + f"/{tile}/"
         images_path = current_tile + "images/"
+        mask_path = current_tile + "masks/"
+
+        # From within a specific tile, read both image and mask and save dict to list
         for image_uri in os.listdir(images_path):
             img = imageio.imread(images_path + image_uri)
+            mask = imageio.imread(mask_path + image_uri)
 
-            images.append(img)
+            images.append({"img": img, "label": mask})
+
             amount -= 1
-            if amount <= 0:
-                break
-        if amount <= 0:
-            break
 
+    if rand:
+        shuffle(images)
     return images
 
+
 def apply_threshold(image):
-    '''
-    Function that applies the threshold to a given image
-    Args:
-        image (np.ndarray) : The image to apply the threshold to
-    Returns:
-        binary (np.ndarray) : The binarized image based on the threshold
-        log (np.ndarray) : The difference of gaussians of the grayscale image
-    '''
-
+    """Apply Otsu thresholding filter to given image, returning the generated binary mask"""
     grayscale = rgb2gray(image)
-    thresh = threshold_otsu(grayscale)
-    binary = grayscale > thresh
-    log = difference_of_gaussians(grayscale, 5)
+    thresh = filters.threshold_otsu(grayscale)
+    binary = closing(grayscale > thresh, square(3))
+    binary = clear_border(binary)
 
-    return binary, log
-
-
-def apply_clustering(image):
-    ''''
-    Function that applies clustering to the image
-    Args:
-        image (np.ndarray) : The image in which the clustering will be applied
-    Returns:
-        labels1, labels2 (np.ndarray): Image mask
-    '''
-    labels1 = slic(image, compactness=30, n_segments=100, start_label=1)
-    g = graph.rag_mean_color(image, labels1)
-    labels2 = graph.cut_threshold(labels1, g, 29)
-    out2 = label2rgb(labels2, image, kind='avg', bg_label=0)
-    return labels1, labels2
+    return binary
 
 
-def apply_semantic_segmentation(image):
-    ''''
-    Function that applies all segmentations in a certain image
-    Args:
-        image (np.ndarray) : The image in which all segmentations will be applied
-    Returns:
-        otsu, k_means (np.ndarray) : Segmented images
-        log (np.ndarray) : Difference of gaussian distributions
-        normalized_cut (np.ndarray) : Image mask
-    '''
-    otsu, log = apply_threshold(image)
+def region_segmentation(image):
+    """Apply Watershed region segmentation algorithm, returning the generated gradient for each pixel"""
+    gray = rgb2gray(image)
+    # markers = rank.gradient(gray , disk(5)) < 10
+    # markers = ndi.label(markers)[0]
 
-    k_means, normalized_cut = apply_clustering(image)
+    gradient = rank.gradient(gray, disk(5))
 
-    return otsu, log, k_means, normalized_cut
+    gradient_filtered = np.copy(gradient)
+    gradient_filtered[gradient > 128] = 255
+    gradient_filtered[gradient <= 128] = 0
+
+    return gradient_filtered
 
 
 def visualise_semantic(images):
-    ''''
-    Function used for visualization original images and its segmentations
-    Args:
-        images (list): list of images that will be visualized
-    '''
-    for semantic in images:
-        plt.figure(figsize=(32, 32))
+    """Save dict of images (original image, otsu prediction, watershed prediction and true label) to the predictions
+    folder """
+    for idx, semantic in enumerate(images):
 
         plt.subplot(141)
         plt.title("Original")
-        plt.imshow(semantic[0])
+        plt.imshow(semantic["img"])
 
         plt.subplot(142)
-        plt.title("Otsu Threshold")
-        plt.imshow(semantic[1], cmap=plt.cm.gray)
-
-        # plt.subplot(133)
-        # plt.title("Laplacian of Gaussians")
-        # plt.imshow(threshold[1], cmap=plt.cm.gray)
+        plt.title("Region")
+        plt.imshow(semantic["segmentation"][0], cmap=plt.cm.gray)
 
         plt.subplot(143)
-        plt.title("K-Means")
-        plt.imshow(semantic[2], cmap=plt.cm.gray)
+        plt.title("Final")
+        plt.imshow(semantic["segmentation"][1], cmap=plt.cm.gray)
 
         plt.subplot(144)
-        plt.title("Mean cut")
-        plt.imshow(semantic[3], cmap=plt.cm.gray)
-        plt.show()
+        plt.title("Label")
+        plt.imshow(semantic["label"], cmap=plt.cm.gray)
+        plt.savefig(f"predictions/filters/img_{idx}.png")
+
+        print("Error: ", mean_squared_error(semantic["img"], semantic["label"]))
 
 
 def segment_images(images):
-    ''''
-    Function to apply the different kinds of segmentation to the image
-    Args:
-        images (list) : list of all images that will be segmented
-    Returns:
-        semantics_segmentation (list): the list of images after the applied segmentation 
-    '''
+    """Segment a list of images using the Otsu and Watershed algorithms, returning dictionaries containing original
+    input and segmented masks """
     semantic_segmentation = []
     for image in images:
+        otsu = apply_threshold(image['img'])
+        region = region_segmentation(image['img'])
 
-        otsu, log, k_means, mean_cut = apply_semantic_segmentation(image)
-        # TODO: Design mask between mean_cut segmentation and otsu threshold, to fine tune which regions
-        #       are to be semantically marked as buildings.
-
-        semantic_segmentation.append((image, otsu, k_means, mean_cut))
+        # Use the Otsu threshold as the final mask, as it outperformed the Watershed Gradient values
+        final = np.ones((image['img'].shape[0], image['img'].shape[1]))
+        final[region != 255] = 0
+        semantic_segmentation.append({"img": image['img'], "segmentation": [otsu, region, final], "label": image['label']})
     return semantic_segmentation
 
 
-
 def main():
-    images = get_images("../data/processed", 3, True)
-
+    """Read images from dataset directory, segment using Otsu and Watershed and then save to predictions folder"""
+    images = get_images("data/processed", 70, True)
     semantic_segmentation = segment_images(images)
     visualise_semantic(semantic_segmentation)
+
 
 if __name__ == "__main__":
     main()
