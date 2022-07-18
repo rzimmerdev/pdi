@@ -17,7 +17,7 @@ def get_data(path):
     """Create a list of pairs of images and labels, based on an input image path, with a given directory organization.
 
     Example:
-        >>> get_data("../data/processed/")
+        >>> get_data("data/processed/")
         [{"image": "data/processed/images/image_1.jpg", "mask": "data/processed/images/image_1.png"}]
 
     Args:
@@ -44,7 +44,7 @@ class ProcessedImagesDataset(Dataset):
     """Torch Dataset object to return torch tensors from all available images inside the data folders
 
     Example:
-        >>> paths = get_data("../data/processed/")
+        >>> paths = get_data("data/processed/")
         >>> dataset = ProcessedImagesDataset(paths)
         >>> type(dataset.__getitem__(0)[0])
         <torch.Tensor>
@@ -118,7 +118,7 @@ def train_fn(loader: DataLoader, model: torch.nn.Module, optimizer: optim.Optimi
 
 
 def main(device):
-    images_path = "../data/processed"
+    images_path = "data/processed"
 
     torch.cuda.empty_cache()
     dataset = ProcessedImagesDataset(images_path)
@@ -139,8 +139,8 @@ def main(device):
     try:
         train_fn(dataloader, model, optimizer, loss_fn, grad_scaler, epochs)
     except KeyboardInterrupt:
-        torch.save(model.state_dict(), '../models/INTERRUPTED.pth')
-    torch.save(model.state_dict(), '../models/model.pth')
+        torch.save(model.state_dict(), 'models/INTERRUPTED.pth')
+    torch.save(model.state_dict(), 'models/model.pth')
     return model
 
 
@@ -149,7 +149,7 @@ def evaluate(predictor):
     with torch.no_grad():
 
         # Dataset for generating images for the model predictions
-        images_path = "../data/processed"
+        images_path = "data/processed"
         dataset = ProcessedImagesDataset(images_path)
         dataloader = DataLoader(dataset, batch_size=1, shuffle=True)
 
