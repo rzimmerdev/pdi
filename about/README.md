@@ -10,7 +10,7 @@ The Otsu filter didn't quite match expectations, as even though it did correctly
 
 ## Basic segmentation generated images
 
-Below, we generated some Matplotlib figures containing the original image, the Otsu Threshold mask, the Watershed Gradient mask, as well as the true mask from within the dataset. For the entire dataset, the Otsu Treshold obtained the lowest mean MSE, of about `30811`.
+Below, we generated some Matplotlib figures containing the original image, the Otsu Threshold mask, the Watershed Gradient mask, as well as the true mask from within the dataset. For the entire dataset, the Otsu Treshold obtained the lowest mean RMSE, of about `30811`.
 
 [Generated Images](https://github.com/rzimmerdev/pdi-2022/tree/main/predictions/filters):
 
@@ -26,7 +26,7 @@ For this specific problem, we ended up using the UNet, as it performs better wit
 The UNet implementation can be found [here](https://github.com/rzimmerdev/pdi-2022/blob/main/scripts/unet.py).
 
 The Torch library was used to implement and train the network (which was trained using a GPU and requires one to retrain for its current implementation).
-Overall, the model performed much better than either the Otsu filter or the Watershed segmentation, as the following images also show:
+Overall, the model performed much better than either the Otsu filter or the Watershed segmentation, as the following images also show (when comparing to the previous segmentation methods, the UNet achieved a much better RMSE error, averaging between `3000` and `8000`):
 
 [Predicted Masks](https://github.com/rzimmerdev/pdi-2022/tree/main/predictions/unet)
 
