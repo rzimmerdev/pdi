@@ -1,18 +1,9 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
-
 import torch
 import torchvision
 
 from torch.nn import functional, ModuleList
 
 from torch import nn
-
-
-# In[2]:
 
 
 class DoubleConvolutionLayer(nn.Module):
@@ -31,9 +22,6 @@ class DoubleConvolutionLayer(nn.Module):
         return self.convolve(x)
 
 
-# In[3]:
-
-
 class Encoder(nn.Module):
     def __init__(self, in_features, out_features):
         super().__init__()
@@ -44,9 +32,6 @@ class Encoder(nn.Module):
 
     def forward(self, x):
         return self.maxpool_convolve(x)
-
-
-# In[4]:
 
 
 class Decoder(nn.Module):
@@ -74,9 +59,6 @@ class Decoder(nn.Module):
         return self.convolve(x)
 
 
-# In[5]:
-
-
 class OutLayer(nn.Module):
     def __init__(self, in_features, out_features):
         super(OutLayer, self).__init__()
@@ -85,9 +67,6 @@ class OutLayer(nn.Module):
 
     def forward(self, x):
         return self.convolve(x)
-
-
-# In[6]:
 
 
 class UNet(nn.Module):
@@ -119,5 +98,3 @@ class UNet(nn.Module):
 
         classes = self.output_layer(x)
         return classes
-
-# In[ ]:
