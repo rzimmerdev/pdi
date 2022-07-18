@@ -1,13 +1,14 @@
 # Semantic Classification for Satellite Imagery
 Participants: 
 
-1)João Pedro Duarte Nunes - 12542460
+1) João Pedro Duarte Nunes - 12542460
 
-2)Rafael Zimmer - 12542612
+2) Rafael Zimmer - 12542612
 
-3)Eduardo Figueiredo Freire Andrade - 11232820
+3) Eduardo Figueiredo Freire Andrade - 11232820
 
-4)Daniel Carvalho Dantas - 10685702
+4) Daniel Carvalho Dantas - 10685702
+
 ## About
 This repository aims to perform pixel wise image segmentation of buildings using a dataset containing top-down satellite images of cities in Dubai.
 
