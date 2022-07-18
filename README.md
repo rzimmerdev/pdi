@@ -10,7 +10,7 @@ Participants:
 4) Daniel Carvalho Dantas - ********
 
 ## About
-This repository aims to perform pixel wise image segmentation of buildings using a dataset containing top-down satellite images of cities in Dubai.
+This repository aims to perform pixel wise image segmentation of buildings using a dataset containing top-down satellite images of cities in Dubai. This type of task is extremely useful in multiple different areas, such as for performing aerial recognition of developing communities, demographical analysis of a specific region, as well as helping urbanists structure the way new roads, houses or companies are built or cities are continuosly developed.
 
 The dataset used during training can be found [here](https://www.kaggle.com/datasets/humansintheloop/semantic-segmentation-of-aerial-imagery).
 All images are composed by an original satellite photo, as well as a labeled mask image, with different colors corresponding to different elements (only the colors corresponding to buildings were used), such as:
