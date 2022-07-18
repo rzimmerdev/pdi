@@ -1,4 +1,4 @@
-# Buildins Segmentation using Satellite Imagery
+# Buildings Segmentation using Satellite Imagery
 Participants: 
 
 1) João Pedro Duarte Nunes - 12542460
