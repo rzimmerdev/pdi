@@ -1,13 +1,4 @@
 # Buildings Segmentation using Satellite Imagery
-Participants: 
-
-1) João Pedro Duarte Nunes - ********
-
-2) Rafael Zimmer - ********
-
-3) Eduardo Figueiredo Freire Andrade - ********
-
-4) Daniel Carvalho Dantas - ********
 
 ## About
 This repository aims to perform pixel wise image segmentation of buildings using a dataset containing top-down satellite images of cities in Dubai. This type of task is extremely useful in multiple different areas, such as for performing aerial recognition of developing communities, demographical analysis of a specific region, as well as helping urbanists structure the way new roads, houses or companies are built or cities are continuosly developed.
